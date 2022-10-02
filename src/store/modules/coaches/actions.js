@@ -1,6 +1,7 @@
 export default {
-  async registerCoach( context, data ) {
-    const userId = context.rootGetters.userId;
+  async registerCoach({ commit, rootGetters }, data ) {
+    const userId = rootGetters[ 'auth/userId' ]
+    const token = rootGetters[ 'auth/token' ]
     const coachData = {
       firstName: data.first,
       lastName: data.last,
@@ -10,26 +11,24 @@ export default {
     };
 
     const response = await fetch(
-      `https://vue-authentication-87fa8-default-rtdb.firebaseio.com/${ userId }.json`,
+      `https://vue-authentication-87fa8-default-rtdb.firebaseio.com/coaches/${ userId }.json?auth=${ token }`,
       {
         method: 'PUT',
         body: JSON.stringify( coachData )
       }
     );
-
-    // const responseData = await response.json();
+    const responseData = await response.json();
 
     if ( !response.ok ) {
-      // error ...
+      console.log( responseData );
     }
-
-    context.commit('registerCoach', {
+    commit('REGISTER_COACH', {
       ...coachData,
       id: userId
     });
   },
-  async loadCoaches( context, payload ) {
-    if ( !payload.forceRefresh && !context.getters.shouldUpdate ) {
+  async loadCoaches({ commit, getters }, payload ) {
+    if ( !payload.forceRefresh && !getters.shouldUpdate ) {
       return;
     }
 
@@ -54,10 +53,9 @@ export default {
         hourlyRate: responseData[ key ].hourlyRate,
         areas: responseData[ key ].areas
       };
-      coaches.push( coach );
+      coaches.push( coach )
     }
-
-    context.commit( 'setCoaches', coaches );
-    context.commit( 'setFetchTimestamp' );
+    commit( 'SET_COACHES', coaches )
+    commit( 'SET_FETCH_TIMESTAMP' )
   }
 };

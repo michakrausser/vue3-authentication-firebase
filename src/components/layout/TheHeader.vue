@@ -2,19 +2,54 @@
   <header>
     <nav>
       <h1>
-        <router-link to="/">Find a Coach</router-link>
+        <router-link to='/'>Find a Coach</router-link>
       </h1>
+
       <ul>
         <li>
-          <router-link to="/coaches">All Coaches</router-link>
+          <router-link to='/coaches'>All Coaches</router-link>
         </li>
+
         <li>
-          <router-link to="/requests">Requests</router-link>
+          <router-link
+              v-if='isAuthenticated'
+              to='/requests'
+          >
+            Requests
+          </router-link>
+
+          <router-link
+              v-else
+              to='/auth'
+          >
+            Login
+          </router-link>
         </li>
+
+        <li v-if='isAuthenticated'>
+          <base-button @click='logout'>
+            Logout
+          </base-button>
+        </li>
+
       </ul>
     </nav>
   </header>
 </template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+
+
+export default {
+  computed: {
+    ...mapGetters( 'auth', [ 'isAuthenticated' ])
+  },
+  methods: {
+    ...mapActions( 'auth', [ 'logout' ])
+  }
+}
+</script>
 
 <style scoped>
 header {

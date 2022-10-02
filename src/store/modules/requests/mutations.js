@@ -1,8 +1,8 @@
 export default {
-  addRequest(state, payload) {
-    state.requests.push(payload);
+  ADD_REQUEST( state, payload ) {
+    state.requests.push( payload );
   },
-  setRequests(state, payload) {
+  SET_REQUEST( state, payload ) {
     state.requests = payload;
   }
 };

@@ -1,8 +1,8 @@
 <template>
-  <the-header></the-header>
+  <the-header />
   <router-view v-slot="slotProps">
     <transition name="route" mode="out-in">
-      <component :is="slotProps.Component"></component>
+      <component :is="slotProps.Component" />
     </transition>
   </router-view>
 </template>
@@ -10,10 +10,29 @@
 <script>
 import TheHeader from './components/layout/TheHeader.vue';
 
+
 export default {
   components: {
     TheHeader
-  }  
+  },
+  created() {
+    // Automatic Login => get data from local storage
+    const user = localStorage.getItem( 'user' )
+    if ( user ) {
+      const userData = JSON.parse( user )
+      const restTime = Math.trunc(( userData.tokenExpiration - new Date().getTime() ) / 1000 )
+
+      if ( restTime > 30 ) {
+        this.$store.commit( 'auth/SET_USER', userData )
+        this.$store.dispatch(
+          'auth/startCountDownTokenExpiration',
+          restTime
+        )
+      } else {
+        this.$router.push( 'coaches' )
+      }
+    }
+  }
 }
 </script>
 
